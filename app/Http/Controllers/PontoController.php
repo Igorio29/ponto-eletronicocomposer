@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Ponto;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class PontoController extends Controller
+{
+
+    public function index()
+    {
+        $pontos = Ponto::where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('ponto', compact('pontos'));
+    }
+
+    public function entrada()
+    {
+        Ponto::create([
+            'user_id' => Auth::id(),
+            'entrada' => now()
+        ]);
+
+        return back();
+    }
+
+    public function saida($id)
+    {
+        $ponto = Ponto::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $ponto->update([
+            'saida' => now()
+        ]);
+
+        return back();
+    }
+}
