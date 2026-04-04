@@ -11,10 +11,13 @@ class PontoController extends Controller
 
     public function index()
     {
+        if(Auth::user()->nivel_acesso == 2){
+            $pontos = Ponto::latest()->get();
+        } else {
         $pontos = Ponto::where('user_id', Auth::id())
             ->latest()
             ->get();
-
+        }
         return view('ponto', compact('pontos'));
     }
 
