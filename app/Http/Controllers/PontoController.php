@@ -11,12 +11,12 @@ class PontoController extends Controller
 
     public function index()
     {
-        if(Auth::user()->nivel_acesso == 2){
+        if (Auth::user()->nivel_acesso == 2) {
             $pontos = Ponto::latest()->get();
         } else {
-        $pontos = Ponto::where('user_id', Auth::id())
-            ->latest()
-            ->get();
+            $pontos = Ponto::where('user_id', Auth::id())
+                ->latest()
+                ->get();
         }
         return view('ponto', compact('pontos'));
     }
@@ -45,14 +45,14 @@ class PontoController extends Controller
     }
 
     public function destroy($id)
-{
-    if (Auth::user()->nivel_acesso != 2) {
-        abort(403);
+    {
+        if (Auth::user()->nivel_acesso != 2) {
+            abort(403);
+        }
+
+        $ponto = Ponto::findOrFail($id);
+        $ponto->delete();
+
+        return redirect()->back()->with('success', 'Registro deletado!');
     }
-
-    $ponto = Ponto::findOrFail($id);
-    $ponto->delete();
-
-    return redirect()->back()->with('success', 'Registro deletado!');
-}
 }

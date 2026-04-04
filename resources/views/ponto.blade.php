@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ponto</title>
 
     <style>
@@ -108,6 +109,55 @@
 
         .logout:hover {
             transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+
+            .container {
+                margin: 20px 10px;
+                padding: 15px;
+            }
+
+            .top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+
+            .user {
+                font-size: 13px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .card {
+                flex-direction:row;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .info strong {
+                font-size: 16px;
+            }
+
+            .info span {
+                font-size: 14px;
+            }
+
+            .saida,
+            .logout,
+            .entrada {
+                width: 100%;
+            }
+
         }
     </style>
 
