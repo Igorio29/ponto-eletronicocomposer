@@ -43,4 +43,16 @@ class PontoController extends Controller
 
         return back();
     }
+
+    public function destroy($id)
+{
+    if (Auth::user()->nivel_acesso != 2) {
+        abort(403);
+    }
+
+    $ponto = Ponto::findOrFail($id);
+    $ponto->delete();
+
+    return redirect()->back()->with('success', 'Registro deletado!');
+}
 }

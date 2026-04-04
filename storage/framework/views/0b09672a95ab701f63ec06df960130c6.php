@@ -100,15 +100,15 @@
         }
 
         .logout {
-    background: linear-gradient(135deg, #475569, #1e293b);
-    color: #fff;
-    margin-left: 10px;
-    box-shadow: 0 0 8px rgba(100,116,139,0.5);
-}
+            background: linear-gradient(135deg, #475569, #1e293b);
+            color: #fff;
+            margin-left: 10px;
+            box-shadow: 0 0 8px rgba(100, 116, 139, 0.5);
+        }
 
-.logout:hover {
-    transform: scale(1.05);
-}
+        .logout:hover {
+            transform: scale(1.05);
+        }
     </style>
 
 </head>
@@ -118,23 +118,23 @@
     <div class="container">
 
         <div class="top">
-    <div>
-        <div class="title">⚡ TechClock</div>
-        <div class="user">Logado como <?php echo e(auth()->user()->name); ?></div>
-    </div>
+            <div>
+                <div class="title">⚡ TechClock</div>
+                <div class="user">Logado como <?php echo e(auth()->user()->name); ?></div>
+            </div>
 
-    <div style="display:flex; gap:10px;">
-        <form method="POST" action="/entrada">
-            <?php echo csrf_field(); ?>
-            <button class="btn entrada">+ Entrada</button>
-        </form>
+            <div style="display:flex; gap:10px;">
+                <form method="POST" action="/entrada">
+                    <?php echo csrf_field(); ?>
+                    <button class="btn entrada">+ Entrada</button>
+                </form>
 
-        <form method="POST" action="<?php echo e(route('logout')); ?>">
-            <?php echo csrf_field(); ?>
-            <button class="btn logout">Sair</button>
-        </form>
-    </div>
-</div>
+                <form method="POST" action="<?php echo e(route('logout')); ?>">
+                    <?php echo csrf_field(); ?>
+                    <button class="btn logout">Sair</button>
+                </form>
+            </div>
+        </div>
 
         <hr>
 
@@ -152,6 +152,14 @@
             <a href="/saida/<?php echo e($ponto->id); ?>">
                 <button class="btn saida">Finalizar</button>
             </a>
+            <?php else: ?>
+            <?php if(auth()->user()->nivel_acesso == 2): ?>
+            <form method="POST" action="/ponto/<?php echo e($ponto->id); ?>" style="margin-left:10px;">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('DELETE'); ?>
+                <button class="btn saida">🗑 Deletar</button>
+            </form>
+            <?php endif; ?>
             <?php endif; ?>
         </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

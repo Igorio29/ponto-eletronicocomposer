@@ -22,4 +22,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/saida/{id}', [PontoController::class, 'saida']);
 });
 
+Route::delete('/ponto/{id}', [PontoController::class, 'destroy'])->name('ponto.destroy');
+
 require __DIR__ . '/auth.php';

@@ -100,15 +100,15 @@
         }
 
         .logout {
-    background: linear-gradient(135deg, #475569, #1e293b);
-    color: #fff;
-    margin-left: 10px;
-    box-shadow: 0 0 8px rgba(100,116,139,0.5);
-}
+            background: linear-gradient(135deg, #475569, #1e293b);
+            color: #fff;
+            margin-left: 10px;
+            box-shadow: 0 0 8px rgba(100, 116, 139, 0.5);
+        }
 
-.logout:hover {
-    transform: scale(1.05);
-}
+        .logout:hover {
+            transform: scale(1.05);
+        }
     </style>
 
 </head>
@@ -118,23 +118,23 @@
     <div class="container">
 
         <div class="top">
-    <div>
-        <div class="title">⚡ TechClock</div>
-        <div class="user">Logado como {{ auth()->user()->name }}</div>
-    </div>
+            <div>
+                <div class="title">⚡ TechClock</div>
+                <div class="user">Logado como {{ auth()->user()->name }}</div>
+            </div>
 
-    <div style="display:flex; gap:10px;">
-        <form method="POST" action="/entrada">
-            @csrf
-            <button class="btn entrada">+ Entrada</button>
-        </form>
+            <div style="display:flex; gap:10px;">
+                <form method="POST" action="/entrada">
+                    @csrf
+                    <button class="btn entrada">+ Entrada</button>
+                </form>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button class="btn logout">Sair</button>
-        </form>
-    </div>
-</div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn logout">Sair</button>
+                </form>
+            </div>
+        </div>
 
         <hr>
 
@@ -152,6 +152,14 @@
             <a href="/saida/{{ $ponto->id }}">
                 <button class="btn saida">Finalizar</button>
             </a>
+            @else
+            @if(auth()->user()->nivel_acesso == 2)
+            <form method="POST" action="/ponto/{{ $ponto->id }}" style="margin-left:10px;">
+                @csrf
+                @method('DELETE')
+                <button class="btn saida">🗑 Deletar</button>
+            </form>
+            @endif
             @endif
         </div>
         @empty
