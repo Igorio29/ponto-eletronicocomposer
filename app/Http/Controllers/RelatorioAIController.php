@@ -17,6 +17,8 @@ class RelatorioAIController extends Controller
 
     public function gerar(Request $request, GroqService $groq)
     {
+        Log::debug('Iniciando geração de relatório AI: ' . $request->input('prompt'));
+        
         $request->validate([
             'prompt' => 'required|string|max:500',
         ]);
