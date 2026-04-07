@@ -1,223 +1,164 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+     <?php $__env->slot('header', null, []); ?> 
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <?php echo e(__('Ponto Eletrônico')); ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponto</title>
+        </h2>
+     <?php $__env->endSlot(); ?>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-[#0f172a] overflow-hidden shadow-sm sm:rounded-lg p-6">
+                
+                <div class="flex justify-between items-center mb-8 border-b border-gray-700 pb-6">
+ <h3 class="text-xl font-semibold text-white mb-6">Meus Registros</h3>
+                    <div class="flex gap-2">
+                        <form method="POST" action="/entrada">
+                            <?php echo csrf_field(); ?>
+                            <button class="btn entrada">+ Registrar Entrada</button>
+                        </form>
+                    </div>
+                    
+                </div>
+
+               
+
+                <div class="space-y-4">
+                    <?php $__empty_1 = true; $__currentLoopData = $pontos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ponto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <div class="card">
+                        <div class="info">
+                            <strong><?php echo e($ponto->user->name); ?></strong>
+                            <span>Entrada: <?php echo e($ponto->entrada); ?></span>
+                            <span>Saída: <?php echo e($ponto->saida ?? '---'); ?></span>
+                        </div>
+
+                        <div class="flex items-center">
+                            <?php if(!$ponto->saida): ?>
+                            <a href="/saida/<?php echo e($ponto->id); ?>">
+                                <button class="btn saida">Finalizar Turno</button>
+                            </a>
+                            <?php else: ?>
+                                <?php if(auth()->user()->nivel_acesso == 2): ?>
+                                <form method="POST" action="/ponto/<?php echo e($ponto->id); ?>" class="ml-2">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
+                                    <button class="btn saida">🗑 Apagar</button>
+                                </form>
+                                <?php endif; ?>
+                                <span class="text-green-500 text-sm font-bold ml-2">✓ Concluído</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <div class="text-center py-10 text-gray-500">
+                        Nenhum registro de ponto encontrado.
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #38bdf8;
-        }
-
-        .user {
-            font-size: 14px;
-            color: #94a3b8;
-        }
-
         .btn {
-            padding: 12px 18px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 10px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
+            display: inline-flex;
+            items-center;
         }
 
         .entrada {
             background: linear-gradient(135deg, #22c55e, #16a34a);
             color: white;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-        }
-
-        .entrada:hover {
-            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
         }
 
         .saida {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .relatorio {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
         }
 
         .card {
             background: #1e293b;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
+            padding: 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid #334155;
             transition: 0.2s;
         }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-color: #38bdf8;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         .info strong {
             color: #38bdf8;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 4px;
         }
 
         .info span {
             display: block;
-            font-size: 13px;
+            font-size: 0.85rem;
             color: #94a3b8;
         }
 
-        .empty {
-            text-align: center;
-            margin-top: 40px;
-            color: #64748b;
-        }
-
-        hr {
-            border: 1px solid #1e293b;
-            margin: 25px 0;
-        }
-
-        .logout {
-            background: linear-gradient(135deg, #475569, #1e293b);
-            color: #fff;
-            margin-left: 10px;
-            box-shadow: 0 0 8px rgba(100, 116, 139, 0.5);
-        }
-
-        .logout:hover {
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 768px) {
-
-            .container {
-                margin: 20px 10px;
-                padding: 15px;
-            }
-
-            .top {
+        @media (max-width: 640px) {
+            .card {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 15px;
+                gap: 1rem;
             }
-
-            .title {
-                font-size: 22px;
-            }
-
-            .user {
-                font-size: 13px;
-            }
-
             .btn {
                 width: 100%;
-                padding: 14px;
-                font-size: 14px;
+                justify-content: center;
             }
-
-            .card {
-                flex-direction:row;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .info strong {
-                font-size: 16px;
-            }
-
-            .info span {
-                font-size: 14px;
-            }
-
-            .saida,
-            .logout,
-            .entrada {
+            .flex.gap-2 {
+                flex-direction: column;
                 width: 100%;
             }
-
+            form, a {
+                width: 100%;
+            }
         }
     </style>
-
-</head>
-
-<body>
-
-    <div class="container">
-
-        <div class="top">
-            <div>
-                <div class="title">⚡ TechClock</div>
-                <div class="user">Logado como <?php echo e(auth()->user()->name); ?></div>
-            </div>
-
-            <div style="display:flex; gap:10px;">
-                <form method="POST" action="/entrada">
-                    <?php echo csrf_field(); ?>
-                    <button class="btn entrada">+ Entrada</button>
-                </form>
-
-                <form method="POST" action="<?php echo e(route('logout')); ?>">
-                    <?php echo csrf_field(); ?>
-                    <button class="btn logout">Sair</button>
-                </form>
-            </div>
-        </div>
-
-        <hr>
-
-        <h2>Registros</h2>
-
-        <?php $__empty_1 = true; $__currentLoopData = $pontos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ponto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-        <div class="card">
-            <div class="info">
-                <strong><?php echo e($ponto->user->name); ?></strong>
-                <span>Entrada: <?php echo e($ponto->entrada); ?></span>
-                <span>Saída: <?php echo e($ponto->saida ?? '---'); ?></span>
-            </div>
-
-            <?php if(!$ponto->saida): ?>
-            <a href="/saida/<?php echo e($ponto->id); ?>">
-                <button class="btn saida">Finalizar</button>
-            </a>
-            <?php else: ?>
-            <?php if(auth()->user()->nivel_acesso == 2): ?>
-            <form method="POST" action="/ponto/<?php echo e($ponto->id); ?>" style="margin-left:10px;">
-                <?php echo csrf_field(); ?>
-                <?php echo method_field('DELETE'); ?>
-                <button class="btn saida">🗑 Deletar</button>
-            </form>
-            <?php endif; ?>
-            <?php endif; ?>
-        </div>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-        <div class="empty">Nenhum registro ainda.</div>
-        <?php endif; ?>
-
-    </div>
-
-</body>
-
-</html><?php /**PATH C:\Users\Igor\Documents\PHP\ponto-eletronicocomposer\resources\views/ponto.blade.php ENDPATH**/ ?>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?><?php /**PATH C:\Users\Igor\Documents\PHP\ponto-eletronicocomposer\resources\views/ponto.blade.php ENDPATH**/ ?>

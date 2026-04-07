@@ -22,6 +22,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/saida/{id}', [PontoController::class, 'saida']);
 });
 
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/relatorios', [\App\Http\Controllers\RelatorioAIController::class, 'index'])->name('relatorios.index');
+    Route::post('/relatorios/gerar', [\App\Http\Controllers\RelatorioAIController::class, 'gerar'])->name('relatorios.gerar');
+});
+
 Route::delete('/ponto/{id}', [PontoController::class, 'destroy'])->name('ponto.destroy');
 
 require __DIR__ . '/auth.php';
