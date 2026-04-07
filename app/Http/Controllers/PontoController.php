@@ -33,15 +33,18 @@ class PontoController extends Controller
 
     public function saida($id)
     {
-        $ponto = Ponto::where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        // Busca o registro de ponto pelo ID
+        $ponto = Ponto::findOrFail($id);
+
+        if ($ponto->user_id !== Auth::id() && Auth::user()->nivel_acesso != 2) {
+            abort(403, 'Você não tem permissão para finalizar este ponto.');
+        }
 
         $ponto->update([
             'saida' => now()
         ]);
 
-        return back();
+        return back()->with('success', 'Ponto finalizado com sucesso!');
     }
 
     public function destroy($id)
@@ -53,6 +56,6 @@ class PontoController extends Controller
         $ponto = Ponto::findOrFail($id);
         $ponto->delete();
 
-        return redirect()->back()->with('success', 'Registro deletado!');
+        return redirect()->back()->with('error', 'Registro deletado!');
     }
 }

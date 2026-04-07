@@ -49,6 +49,7 @@
     <!-- Incluindo biblioteca Marked para converter Markdown em HTML -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+    <!-- Script de Integração com a API de Relatórios -->
     <script>
         async function gerarRelatorio() {
             const prompt = document.getElementById('prompt').value;
@@ -60,45 +61,50 @@
             const sqlDebug = document.getElementById('sql-debug');
             const sqlContent = document.getElementById('sql-content');
 
+            // Validação simples de campo vazio
             if (!prompt.trim()) {
                 alert('Por favor, digite o que deseja consultar.');
                 return;
             }
 
-            // UI Loading state
+            // Ativa o estado de carregamento (Loading)
             btn.disabled = true;
             btnText.innerText = 'Processando...';
             btnSpinner.classList.remove('hidden');
             container.classList.add('hidden');
 
             try {
+                // Chamada para a rota do backend definida no RelatorioAIController
                 const response = await fetch('{{ route("relatorios.gerar") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
+                        'Accept': 'application/json', // Força o Laravel a retornar JSON mesmo em erros de validação/sessão
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({ prompt: prompt })
                 });
 
+                // Verifica se a resposta é JSON (se for HTML, é um erro de servidor ou de sessão expirada)
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
                     const errorText = await response.text();
                     console.error("Erro da API (HTML recebido):", errorText);
-                    throw new Error("O servidor retornou uma resposta inesperada (HTML). Verifique se sua sessão não expirou ou se há um erro de servidor.");
+                    throw new Error("O servidor retornou uma resposta inesperada. Verifique se sua sessão não expirou ou se as variáveis de ambiente (GROQ_KEY) estão corretas.");
                 }
 
                 const data = await response.json();
 
+                // Se o backend retornou um erro estruturado
                 if (!response.ok) {
                     throw new Error(data.error || 'Ocorreu um erro ao gerar o relatório.');
                 }
 
-                // Render Markdown
+                // Utiliza a biblioteca Marked.js para transformar o Markdown da IA em HTML formatado
                 content.innerHTML = marked.parse(data.report);
                 container.classList.remove('hidden');
 
+                // Exibe o SQL gerado caso o servidor o envie (apenas em modo debug)
                 if (data.sql) {
                     sqlContent.innerText = data.sql;
                     sqlDebug.classList.remove('hidden');
@@ -107,11 +113,15 @@
                 }
 
             } catch (error) {
+                // Exibe o alerta de erro para o usuário
                 alert(error.message);
             } finally {
+                // Restaura o estado original do botão
                 btn.disabled = false;
                 btnText.innerText = 'Gerar Relatório';
                 btnSpinner.classList.add('hidden');
+                
+                // Rola a página suavemente para o resultado
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
         }
