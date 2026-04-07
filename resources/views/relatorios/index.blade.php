@@ -76,10 +76,18 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({ prompt: prompt })
                 });
+
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const errorText = await response.text();
+                    console.error("Erro da API (HTML recebido):", errorText);
+                    throw new Error("O servidor retornou uma resposta inesperada (HTML). Verifique se sua sessão não expirou ou se há um erro de servidor.");
+                }
 
                 const data = await response.json();
 
